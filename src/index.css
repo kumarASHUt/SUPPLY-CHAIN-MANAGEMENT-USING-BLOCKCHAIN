@@ -1,0 +1,12 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+@import "tailwindcss";
+
+:root {
+  --primary-admin: #1e293b;
+  --primary-supplier: #2563eb;
+  --primary-manufacturer: #059669;
+  --primary-distributor: #d97706;
+  --primary-retailer: #9333ea;
+}

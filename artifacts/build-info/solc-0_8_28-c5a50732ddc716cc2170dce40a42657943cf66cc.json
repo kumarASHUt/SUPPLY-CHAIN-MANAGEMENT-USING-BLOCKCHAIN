@@ -1,0 +1,39 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-c5a50732ddc716cc2170dce40a42657943cf66cc",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "userSourceNameMap": {
+    "contracts/Counter.sol": "project/contracts/Counter.sol",
+    "contracts/SupplyChain.sol": "project/contracts/SupplyChain.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode",
+            "evm.deployedBytecode",
+            "evm.methodIdentifiers",
+            "metadata"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/Counter.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.28;\n\ncontract Counter {\n  uint public x;\n\n  event Increment(uint by);\n\n  function inc() public {\n    x++;\n    emit Increment(1);\n  }\n\n  function incBy(uint by) public {\n    require(by > 0, \"incBy: increment should be positive\");\n    x += by;\n    emit Increment(by);\n  }\n}\n"
+      },
+      "project/contracts/SupplyChain.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.20;\r\n\r\ncontract SupplyChain {\r\n    enum Status { \r\n        RetailerRequested, \r\n        ForwardedToManufacturer, \r\n        RawMaterialRequested, \r\n        RawMaterialReceived, \r\n        Manufacturing, \r\n        ProductReceivedByDistributor, \r\n        DeliveredToRetailer, \r\n        FinalReceiptVerified \r\n    }\r\n\r\n    struct Order {\r\n        string id;\r\n        string product;\r\n        uint256 quantity;\r\n        uint256 unitPrice;\r\n        uint256 totalPrice;\r\n        address retailer;\r\n        address supplier;\r\n        address manufacturer;\r\n        address distributor;\r\n        Status status;\r\n        uint256 timestamp;\r\n        bool exists;\r\n    }\r\n\r\n    struct HistoryEntry {\r\n        string orderId;\r\n        Status status;\r\n        address actor;\r\n        string role;\r\n        uint256 timestamp;\r\n    }\r\n\r\n    mapping(string => Order) public orders;\r\n    mapping(string => HistoryEntry[]) public orderHistory;\r\n    string[] public orderIds;\r\n\r\n    event OrderCreated(string orderId, string product, uint256 quantity, address retailer);\r\n    event StatusUpdated(string orderId, Status status, address actor, string role, uint256 timestamp);\r\n\r\n    modifier orderExists(string memory _orderId) {\r\n        require(orders[_orderId].exists, \"Order does not exist\");\r\n        _;\r\n    }\r\n\r\n    function createOrder(\r\n        string memory _orderId, \r\n        string memory _product, \r\n        uint256 _quantity, \r\n        uint256 _unitPrice\r\n    ) public {\r\n        require(!orders[_orderId].exists, \"Order ID already exists\");\r\n        \r\n        orders[_orderId] = Order({\r\n            id: _orderId,\r\n            product: _product,\r\n            quantity: _quantity,\r\n            unitPrice: _unitPrice,\r\n            totalPrice: _unitPrice * _quantity,\r\n            retailer: msg.sender,\r\n            supplier: address(0),\r\n            manufacturer: address(0),\r\n            distributor: address(0),\r\n            status: Status.RetailerRequested,\r\n            timestamp: block.timestamp,\r\n            exists: true\r\n        });\r\n\r\n        orderIds.push(_orderId);\r\n        \r\n        _updateHistory(_orderId, Status.RetailerRequested, \"Retailer\");\r\n        emit OrderCreated(_orderId, _product, _quantity, msg.sender);\r\n    }\r\n\r\n    function updateStatus(string memory _orderId, Status _newStatus, string memory _role) \r\n        public \r\n        orderExists(_orderId) \r\n    {\r\n        Order storage order = orders[_orderId];\r\n        order.status = _newStatus;\r\n        \r\n        // Assign roles based on who interacts\r\n        if (_newStatus == Status.RawMaterialReceived) order.supplier = msg.sender;\r\n        if (_newStatus == Status.Manufacturing) order.manufacturer = msg.sender;\r\n        if (_newStatus == Status.ProductReceivedByDistributor) order.distributor = msg.sender;\r\n\r\n        _updateHistory(_orderId, _newStatus, _role);\r\n    }\r\n\r\n    function _updateHistory(string memory _orderId, Status _status, string memory _role) internal {\r\n        HistoryEntry memory entry = HistoryEntry({\r\n            orderId: _orderId,\r\n            status: _status,\r\n            actor: msg.sender,\r\n            role: _role,\r\n            timestamp: block.timestamp\r\n        });\r\n        \r\n        orderHistory[_orderId].push(entry);\r\n        emit StatusUpdated(_orderId, _status, msg.sender, _role, block.timestamp);\r\n    }\r\n\r\n    function getOrderHistory(string memory _orderId) public view returns (HistoryEntry[] memory) {\r\n        return orderHistory[_orderId];\r\n    }\r\n\r\n    function getAllOrderIds() public view returns (string[] memory) {\r\n        return orderIds;\r\n    }\r\n}\r\n"
+      }
+    }
+  }
+}
