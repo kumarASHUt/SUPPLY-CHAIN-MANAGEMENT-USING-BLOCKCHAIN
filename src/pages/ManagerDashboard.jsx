@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { 
   LayoutDashboard, History, Package, AlertTriangle, CheckCircle2, 
   Clock, ArrowRight, ShieldCheck, Warehouse, Factory, Search,
-  TrendingUp, TrendingDown, Bell, Zap
+  TrendingUp, TrendingDown, Bell, Zap, 
 } from 'lucide-react';
 import HistoryView from '../components/HistoryView';
 
@@ -177,7 +177,7 @@ const ManagerDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        
       )}
 
       {activeTab === 'inventory' && (
