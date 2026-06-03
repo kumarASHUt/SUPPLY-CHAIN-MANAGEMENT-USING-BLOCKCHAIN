@@ -5,16 +5,17 @@ contract SupplyChain {
     enum Status { 
         RetailerRequested,               // 0
         ForwardedToManager,              // 1
-        RawMaterialRequested,            // 2 (By Manager)
-        InstructionToWarehouse,          // 3 (By Manager)
-        RawMaterialReceived,             // 4 (By Manufacturer)
-        Manufacturing,                   // 5 (By Manufacturer)
-        SentToWarehouse,                 // 6 (By Manufacturer)
-        ProductReceivedByWarehouse,      // 7 (By Warehouse Officer)
-        SentToDistributor,               // 8 (By Warehouse Officer)
-        ProductReceivedByDistributor,    // 9 (By Distributor)
-        DeliveredToRetailer,             // 10 (By Distributor)
-        FinalReceiptVerified             // 11 (By Retailer)
+        ProductAvailableAndShippingSoon, // 2
+        RawMaterialRequested,            // 3 (By Manager)
+        InstructionToWarehouse,          // 4 (By Manager)
+        RawMaterialReceived,             // 5 (By Manufacturer)
+        Manufacturing,                   // 6 (By Manufacturer)
+        SentToWarehouse,                 // 7 (By Manufacturer)
+        ProductReceivedByWarehouse,      // 8 (By Warehouse Officer)
+        SentToDistributor,               // 9 (By Warehouse Officer)
+        ProductReceivedByDistributor,    // 10 (By Distributor)
+        DeliveredToRetailer,             // 11 (By Distributor)
+        FinalReceiptVerified             // 12 (By Retailer)
     }
 
     struct Order {
@@ -93,7 +94,7 @@ contract SupplyChain {
         order.status = _newStatus;
         
         // Assign roles based on who interacts
-        if (_newStatus == Status.ForwardedToManager) order.distributor = msg.sender;
+        if (_newStatus == Status.ForwardedToManager || _newStatus == Status.ProductAvailableAndShippingSoon) order.distributor = msg.sender;
         if (_newStatus == Status.RawMaterialRequested || _newStatus == Status.InstructionToWarehouse) order.manager = msg.sender;
         if (_newStatus == Status.RawMaterialReceived) order.supplier = msg.sender;
         if (_newStatus == Status.Manufacturing) order.manufacturer = msg.sender;

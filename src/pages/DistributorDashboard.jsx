@@ -8,7 +8,7 @@ import {
 import HistoryView from '../components/HistoryView';
 
 const DistributorDashboard = () => {
-  const { orders, updateOrderStatus, history, registeredUsers } = useAppContext();
+  const { orders, updateOrderStatus, history, registeredUsers, inventory } = useAppContext();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedOrderForBill, setSelectedOrderForBill] = useState(null);
 
@@ -134,21 +134,36 @@ const DistributorDashboard = () => {
             ) : (
               pendingRequests.map(order => {
                 const retailer = getRetailer(order.retailerId);
+                const isAvailable = (inventory[order.product] || 0) >= order.quantity;
                 return (
                   <div key={order.id} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <span className="text-[10px] font-bold text-orange-600 uppercase tracking-widest bg-orange-50 px-2 py-0.5 rounded">Action Required</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-widest ${isAvailable ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}`}>
+                          {isAvailable ? 'In Stock' : 'Out of Stock'}
+                        </span>
                         <h3 className="font-mono font-bold text-gray-900 mt-1">{order.id}</h3>
                         <p className="text-sm text-gray-500">{order.product} (x{order.quantity})</p>
                       </div>
-                      <button onClick={() => {
-                        if(window.confirm("Forward this request to the Supply Chain Manager?"))
-                          updateOrderStatus(order.id, 'Forwarded to Manager', 'Distributor')
-                      }} 
-                        className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-black flex items-center gap-2 transition-all active:scale-95">
-                        Forward to Manager <ArrowRight className="w-4 h-4" />
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        {isAvailable ? (
+                          <button onClick={() => {
+                            if(window.confirm("Product is available in stock. Start shipping process?"))
+                              updateOrderStatus(order.id, 'Product is available and will be shipped soon', 'Distributor')
+                          }} 
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-bold hover:bg-green-700 flex items-center gap-2 transition-all active:scale-95 shadow-md shadow-green-100">
+                            Approve & Ship <ArrowRight className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <button onClick={() => {
+                            if(window.confirm("Product not in stock. Forward this request to the Supply Chain Manager?"))
+                              updateOrderStatus(order.id, 'Forwarded to Manager', 'Distributor')
+                          }} 
+                            className="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-black flex items-center gap-2 transition-all active:scale-95">
+                            Forward to Manager <ArrowRight className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
                       <div className="flex items-center gap-2 text-xs text-gray-500"><Store className="w-3 h-3" /><span>{retailer?.name || order.retailerId}</span></div>

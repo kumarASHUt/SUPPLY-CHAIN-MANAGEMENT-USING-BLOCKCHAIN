@@ -12,7 +12,10 @@ const WarehouseDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   const inboundShipments = orders.filter(o => o.status === 'Sent to Warehouse');
-  const outboundShipments = orders.filter(o => o.status === 'Instruction to Warehouse');
+  const outboundShipments = orders.filter(o => 
+    o.status === 'Instruction to Warehouse' || 
+    o.status === 'Product is available and will be shipped soon'
+  );
 
   const stats = [
     { label: 'Total SKU', value: Object.keys(inventory).length, icon: Package, color: 'text-slate-600', bg: 'bg-slate-50' },
@@ -94,17 +97,18 @@ const WarehouseDashboard = () => {
                 <h2 className="text-xl font-black text-gray-900 uppercase tracking-tighter">Outbound Logistics (Dispatch Center)</h2>
               </div>
               {outboundShipments.length === 0 ? (
-                <div className="bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center text-gray-400 italic">No dispatch instructions from manager.</div>
+                <div className="bg-white p-12 rounded-3xl border border-dashed border-gray-200 text-center text-gray-400 italic">No dispatch instructions from manager or distributor.</div>
               ) : (
                 outboundShipments.map(order => (
                   <div key={order.id} className="bg-white p-6 rounded-3xl border-blue-50 border-2 shadow-sm">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded">Manager Instruction</span>
+                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded">
+                          {order.status.includes('available') ? 'Distributor Instruction' : 'Manager Instruction'}
+                        </span>
                         <h3 className="font-mono font-bold text-gray-900 mt-1">{order.id}</h3>
                         <p className="text-sm text-gray-600 font-bold">{order.product} (x{order.quantity})</p>
-                      </div>
-                      <button onClick={() => updateOrderStatus(order.id, 'Sent to Distributor', 'Warehouse Officer')} 
+                      </div>                      <button onClick={() => updateOrderStatus(order.id, 'Sent to Distributor', 'Warehouse Officer')} 
                         className="px-6 py-3 bg-blue-600 text-white rounded-xl text-sm font-black hover:bg-blue-700 flex items-center gap-2 transition-all active:scale-95 shadow-lg shadow-blue-100">
                         Dispatch Now <Truck className="w-4 h-4" />
                       </button>

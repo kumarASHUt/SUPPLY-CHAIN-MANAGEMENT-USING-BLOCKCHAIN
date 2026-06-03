@@ -5,16 +5,17 @@ export const CONTRACT_ADDRESS = "0xA57380c51afAcF63D362BCa81c336401bDa8d68D";
 export const STATUS_ENUM = [
   "Retailer Requested",               // 0
   "Forwarded to Manager",              // 1
-  "Raw Material Requested",            // 2 (By Manager)
-  "Instruction to Warehouse",          // 3 (By Manager)
-  "Raw Material Received",             // 4 (By Manufacturer)
-  "Manufacturing",                   // 5 (By Manufacturer)
-  "Sent to Warehouse",                 // 6 (By Manufacturer)
-  "Product Received by Warehouse",      // 7 (By Warehouse Officer)
-  "Sent to Distributor",               // 8 (By Warehouse Officer)
-  "Product Received by Distributor",    // 9 (By Distributor)
-  "Delivered to Retailer",             // 10 (By Distributor)
-  "Final Receipt Verified"             // 11 (By Retailer)
+  "Product is available and will be shipped soon", // 2
+  "Raw Material Requested",            // 3 (By Manager)
+  "Instruction to Warehouse",          // 4 (By Manager)
+  "Raw Material Received",             // 5 (By Manufacturer)
+  "Manufacturing",                   // 6 (By Manufacturer)
+  "Sent to Warehouse",                 // 7 (By Manufacturer)
+  "Product Received by Warehouse",      // 8 (By Warehouse Officer)
+  "Sent to Distributor",               // 9 (By Warehouse Officer)
+  "Product Received by Distributor",    // 10 (By Distributor)
+  "Delivered to Retailer",             // 11 (By Distributor)
+  "Final Receipt Verified"             // 12 (By Retailer)
 ];
 
 export const CONTRACT_ABI = [
